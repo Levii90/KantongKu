@@ -8,18 +8,23 @@
 
 .ambient-effects__ridges,
 .ambient-effects__cursor {
-    position: absolute;
     inset: 0;
     display: block;
     width: 100%;
     height: 100%;
 }
 
-.ambient-effects__cursor {
-    z-index: 1;
+.ambient-effects__ridges {
+    position: absolute;
 }
 
-body > :not(.ambient-effects) {
+.ambient-effects__cursor {
+    position: fixed;
+    z-index: 40;
+    pointer-events: none;
+}
+
+body > :not(.ambient-effects):not(.ambient-effects__cursor):not([x-data]):not([class~="fixed"]):not([class~="absolute"]):not([class~="sticky"]) {
     position: relative;
     z-index: 1;
 }
