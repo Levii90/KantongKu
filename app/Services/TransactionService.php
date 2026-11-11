@@ -47,33 +47,8 @@ class TransactionService
     public function createForUser(User $user, array $payload): Transaction
     {
         return DB::transaction(function () use ($user, $payload) {
-            $category = Category::query()->find($payload['category_id'] ?? null);
-
-            if (! $category || (! $category->user_id && $category->user_id !== null)) {
-                throw ValidationException::withMessages([
-                    'category_id' => ['Kategori yang dipilih tidak valid.'],
-                ]);
-            }
-
-            $allowedForUser = $category->user_id === null || $category->user_id === $user->id;
-            if (! $allowedForUser) {
-                throw ValidationException::withMessages([
-                    'category_id' => ['Kategori yang dipilih tidak valid.'],
-                ]);
-            }
-
-            if ($category->type !== ($payload['type'] ?? null)) {
-                throw ValidationException::withMessages([
-                    'category_id' => ['Kategori yang dipilih tidak sesuai dengan tipe transaksi.'],
-                ]);
-            }
-
+            $category = $this->categoryForTransaction($user, $payload);
             $amount = (float) ($payload['amount'] ?? 0);
-            if ($amount <= 0) {
-                throw ValidationException::withMessages([
-                    'amount' => ['Jumlah transaksi harus lebih dari 0.'],
-                ]);
-            }
 
             return $user->transactions()->create([
                 'category_id' => $category->id,
@@ -83,5 +58,63 @@ class TransactionService
                 'description' => $payload['description'] ?? null,
             ])->load('category');
         });
+    }
+
+    public function updateForUser(User $user, Transaction $transaction, array $payload): Transaction
+    {
+        if ($transaction->user_id !== $user->id) {
+            abort(404, 'Resource not found');
+        }
+
+        return DB::transaction(function () use ($user, $transaction, $payload) {
+            $category = $this->categoryForTransaction($user, $payload);
+            $transaction->update([
+                'category_id' => $category->id,
+                'type' => $payload['type'],
+                'amount' => (float) $payload['amount'],
+                'transaction_date' => $payload['transaction_date'],
+                'description' => $payload['description'] ?? null,
+            ]);
+
+            return $transaction->refresh()->load('category');
+        });
+    }
+
+    public function deleteForUser(User $user, Transaction $transaction): bool
+    {
+        if ($transaction->user_id !== $user->id) {
+            abort(404, 'Resource not found');
+        }
+
+        return $transaction->delete();
+    }
+
+    private function categoryForTransaction(User $user, array $payload): Category
+    {
+        $category = Category::query()->find($payload['category_id'] ?? null);
+
+        if (
+            ! $category
+            || ($category->user_id !== null && $category->user_id !== $user->id)
+        ) {
+            throw ValidationException::withMessages([
+                'category_id' => ['Kategori yang dipilih tidak valid.'],
+            ]);
+        }
+
+        if ($category->type !== ($payload['type'] ?? null)) {
+            throw ValidationException::withMessages([
+                'category_id' => ['Kategori yang dipilih tidak sesuai dengan tipe transaksi.'],
+            ]);
+        }
+
+        $amount = (float) ($payload['amount'] ?? 0);
+        if ($amount <= 0) {
+            throw ValidationException::withMessages([
+                'amount' => ['Jumlah transaksi harus lebih dari 0.'],
+            ]);
+        }
+
+        return $category;
     }
 }

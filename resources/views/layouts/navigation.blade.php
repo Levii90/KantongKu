@@ -32,6 +32,21 @@
                         <span>Transaksi</span>
                     </a>
 
+                    <a href="{{ route('budgets.index') }}"
+                       class="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('budgets.*') ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}">
+                        Anggaran
+                    </a>
+
+                    <a href="{{ route('categories.index') }}"
+                       class="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('categories.*') ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}">
+                        Kategori
+                    </a>
+
+                    <a href="{{ route('insights.index') }}"
+                       class="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('insights.*') ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}">
+                        Insights
+                    </a>
+
                     <a href="{{ route('reports.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 {{ request()->routeIs('reports.*') ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,6 +143,15 @@
             </a>
             <a href="{{ route('transactions.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('transactions.*') ? 'bg-indigo-600/20 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">
                 Transaksi
+            </a>
+            <a href="{{ route('budgets.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('budgets.*') ? 'bg-indigo-600/20 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">
+                Anggaran
+            </a>
+            <a href="{{ route('categories.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('categories.*') ? 'bg-indigo-600/20 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">
+                Kategori
+            </a>
+            <a href="{{ route('insights.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('insights.*') ? 'bg-indigo-600/20 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">
+                Insights
             </a>
             <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('reports.*') ? 'bg-indigo-600/20 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">
                 Laporan

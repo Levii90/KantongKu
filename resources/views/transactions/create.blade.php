@@ -1,10 +1,10 @@
 <x-app-layout>
     <div class="max-w-xl mx-auto space-y-6" x-data="{
-        type: 'expense',
-        amount: '{{ old('amount') }}',
-        categoryId: '{{ old('category_id') }}',
-        transactionDate: '{{ old('transaction_date', date('Y-m-d')) }}',
-        description: '{{ old('description') }}',
+        type: @js(old('type', $transaction->type ?? 'expense')),
+        amount: @js(old('amount', $transaction->amount ?? '')),
+        categoryId: @js(old('category_id', $transaction->category_id ?? '')),
+        transactionDate: @js(old('transaction_date', isset($transaction) ? $transaction->transaction_date->format('Y-m-d') : date('Y-m-d'))),
+        description: @js(old('description', $transaction->description ?? '')),
         isSubmitting: false,
         allCategories: {{ Js::from($categories) }},
         get filteredCategories() {
@@ -28,8 +28,8 @@
         <!-- Header -->
         <div class="flex items-center justify-between pb-4 border-b border-slate-800/80">
             <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Formulir Transaksi</h1>
-                <p class="text-xs sm:text-sm text-slate-400 mt-1">Tambahkan pemasukan atau pengeluaran baru ke dalam catatan keuangan Anda.</p>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ isset($transaction) ? 'Edit Transaksi' : 'Formulir Transaksi' }}</h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1">{{ isset($transaction) ? 'Perbarui detail transaksi Anda.' : 'Tambahkan pemasukan atau pengeluaran baru ke dalam catatan keuangan Anda.' }}</p>
             </div>
             <a href="{{ route('transactions.index') }}" class="text-xs text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1 font-semibold">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,8 +43,11 @@
         <div class="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 sm:p-8 backdrop-blur-md shadow-2xl relative">
             <div class="absolute -top-10 -right-10 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-            <form method="POST" action="{{ route('transactions.store') }}" @submit="isSubmitting = true" class="space-y-5">
+            <form method="POST" action="{{ isset($transaction) ? route('transactions.update', $transaction) : route('transactions.store') }}" @submit="isSubmitting = true" class="space-y-5">
                 @csrf
+                @if(isset($transaction))
+                    @method('PUT')
+                @endif
 
                 <!-- Transaction Type Toggle -->
                 <div>
@@ -162,7 +165,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span x-text="isSubmitting ? 'Menyimpan Transaksi...' : 'Simpan Transaksi'">Simpan Transaksi</span>
+                        <span x-text="isSubmitting ? 'Menyimpan Transaksi...' : '{{ isset($transaction) ? 'Perbarui Transaksi' : 'Simpan Transaksi' }}'">{{ isset($transaction) ? 'Perbarui Transaksi' : 'Simpan Transaksi' }}</span>
                     </button>
                 </div>
             </form>

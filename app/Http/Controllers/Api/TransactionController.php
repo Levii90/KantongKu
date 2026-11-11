@@ -12,9 +12,7 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function __construct(private readonly TransactionService $transactionService)
-    {
-    }
+    public function __construct(private readonly TransactionService $transactionService) {}
 
     public function index(TransactionIndexRequest $request): JsonResponse
     {
@@ -50,14 +48,44 @@ class TransactionController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'id' => (int) $transaction->id,
-                'type' => $transaction->type,
-                'amount' => (float) $transaction->amount,
-                'transaction_date' => $transaction->transaction_date->format('Y-m-d'),
-                'category_id' => (int) $transaction->category_id,
-                'description' => $transaction->description,
-            ],
+            'data' => $this->serializeTransaction($transaction),
         ]);
+    }
+
+    public function update(Transaction $transaction, TransactionStoreRequest $request): JsonResponse
+    {
+        $transaction = $this->transactionService->updateForUser(
+            $request->user(),
+            $transaction,
+            $request->validated(),
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaksi berhasil diperbarui.',
+            'data' => $this->serializeTransaction($transaction),
+        ]);
+    }
+
+    public function destroy(Transaction $transaction, Request $request): JsonResponse
+    {
+        $this->transactionService->deleteForUser($request->user(), $transaction);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaksi berhasil dihapus.',
+        ]);
+    }
+
+    private function serializeTransaction(Transaction $transaction): array
+    {
+        return [
+            'id' => (int) $transaction->id,
+            'type' => $transaction->type,
+            'amount' => (float) $transaction->amount,
+            'transaction_date' => $transaction->transaction_date->format('Y-m-d'),
+            'category_id' => (int) $transaction->category_id,
+            'description' => $transaction->description,
+        ];
     }
 }

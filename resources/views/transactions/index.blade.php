@@ -96,6 +96,7 @@
                                 <th scope="col" class="py-3.5 px-4 font-bold">Deskripsi</th>
                                 <th scope="col" class="py-3.5 px-4 font-bold">Tipe</th>
                                 <th scope="col" class="py-3.5 px-4 font-bold text-right">Nominal (Rp)</th>
+                                <th scope="col" class="py-3.5 px-4 font-bold text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-800/60">
@@ -120,6 +121,15 @@
                                     </td>
                                     <td class="py-3.5 px-4 text-right font-bold text-sm tracking-tight whitespace-nowrap {{ $tx['type'] === 'income' ? 'text-emerald-400' : 'text-rose-400' }}">
                                         {{ $tx['type'] === 'income' ? '+' : '-' }}Rp {{ number_format($tx['amount'], 0, ',', '.') }}
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-3">
+                                            <a href="{{ route('transactions.edit', $tx['id']) }}" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300">Edit</a>
+                                            <form method="POST" action="{{ route('transactions.destroy', $tx['id']) }}" onsubmit="return confirm('Hapus transaksi ini?')">
+                                                @csrf @method('DELETE')
+                                                <button class="text-xs font-semibold text-rose-400 hover:text-rose-300">Hapus</button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

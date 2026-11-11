@@ -132,9 +132,16 @@
 }
 ```
 
+### Create, read, update, and delete personal categories
+- `POST /api/v1/categories` creates a category owned by the authenticated user. Body fields: `name` (required, max 100), `type` (`income` or `expense`), optional `icon` (max 50), and optional six-digit hex `color`.
+- `GET /api/v1/categories/{id}` returns a category visible to that user, including system defaults.
+- `PUT /api/v1/categories/{id}` replaces the category fields using the create body.
+- `DELETE /api/v1/categories/{id}` deletes a personal category only when no transactions or budgets use it.
+- Attempts to change the type of a category already used by a transaction or budget, or delete an in-use category, return `422`. System defaults and categories belonging to another user cannot be modified or deleted; they return `404`.
+
 ## Budgets
 
-### 5) List Budgets
+### 6) List Budgets
 - `GET /api/v1/budgets?month=11&year=2026`
 - Auth required.
 - Response `200`:
@@ -154,7 +161,7 @@
 }
 ```
 
-### 6) Create Budget
+### 7) Create Budget
 - `POST /api/v1/budgets`
 - Auth required.
 - Body:
@@ -181,7 +188,8 @@
 }
 ```
 
-### 7) Update and delete budgets
+### 8) Read, update, and delete budgets
+- `GET /api/v1/budgets/{id}` returns one of the authenticated user's budgets.
 - `PUT /api/v1/budgets/{id}` uses the same body as create and returns `200`.
 - `DELETE /api/v1/budgets/{id}` returns `200` with a success message.
 - Both operations are scoped to the authenticated user; another user's budget returns `404`.
@@ -190,7 +198,7 @@
 
 ## Transactions
 
-### 8) List Transactions
+### 9) List Transactions
 - `GET /api/v1/transactions?month=11&year=2026&type=expense`
 - Auth required.
 - Response `200`:
@@ -211,7 +219,7 @@
 }
 ```
 
-### 9) Create Transaction
+### 10) Create Transaction
 - `POST /api/v1/transactions`
 - Auth required.
 - Body:
@@ -240,15 +248,31 @@
 }
 ```
 
-### 10) Get Transaction Detail
+### 11) Get Transaction Detail
 - `GET /api/v1/transactions/{id}`
 - Auth required.
 - Response `200` with same fields as create response.
 - Response `404` if the transaction belongs to another user or does not exist.
 
+### 12) Update and delete transactions
+- `PUT /api/v1/transactions/{id}` accepts the same required fields as create and returns the updated transaction.
+- `DELETE /api/v1/transactions/{id}` returns `200` with a success message.
+- Both operations are scoped to the authenticated user; another user's transaction returns `404`.
+
+## Financial Insights
+
+Manual insights are saved separately from automatically generated dashboard analysis.
+
+- `GET /api/v1/insights?month=11&year=2026` lists manual insights. `month` and `year` filters are optional.
+- `POST /api/v1/insights` creates an insight with required `message` (max 500 characters), `month` (1-12), and `year` (2000-32767); returns `201`.
+- `GET /api/v1/insights/{id}` reads one insight owned by the authenticated user.
+- `PUT /api/v1/insights/{id}` updates the same fields as create.
+- `DELETE /api/v1/insights/{id}` deletes the insight.
+- Reading or mutating another user's insight returns `404`.
+
 ## Reports
 
-### 11) Reports Summary
+### 13) Reports Summary
 - `GET /api/v1/reports/summary?start_date=2026-01-01&end_date=2026-11-11`
 - Auth required.
 - Response `200`:
@@ -277,7 +301,7 @@
 }
 ```
 
-### 12) Chart Data
+### 14) Chart Data
 - `GET /api/v1/reports/chart-data?start_date=2026-01-01&end_date=2026-11-11`
 - Auth required.
 - Returns the same reporting payload as `/reports/summary` for chart rendering.

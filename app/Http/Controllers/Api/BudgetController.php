@@ -25,6 +25,24 @@ class BudgetController extends Controller
         ]);
     }
 
+    public function show(Budget $budget): JsonResponse
+    {
+        abort_unless($budget->user_id === auth()->id(), 404);
+        $budget->load('category');
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => (int) $budget->id,
+                'category_id' => (int) $budget->category_id,
+                'category_name' => $budget->category?->name ?? 'Uncategorized',
+                'amount_limit' => (float) $budget->amount_limit,
+                'month' => (int) $budget->month,
+                'year' => (int) $budget->year,
+            ],
+        ]);
+    }
+
     public function store(BudgetStoreRequest $request): JsonResponse
     {
         $budget = $this->budgetService->createForUser(auth()->user(), $request->validated());

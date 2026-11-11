@@ -167,26 +167,35 @@
             </div>
         </div>
 
-        <!-- Financial Insights Banner (Generated Strictly by Backend) -->
-        @if(!empty($summary['insights']))
+        <!-- System-generated and user-managed financial insights -->
+        @if(!empty($summary['insights']) || $manualInsights->isNotEmpty())
             <div class="rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-slate-900 to-slate-900 p-5 shadow-lg">
-                <div class="flex items-start gap-3.5">
-                    <div class="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 flex-shrink-0 mt-0.5">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white tracking-tight mb-1">Financial Insights</h4>
-                        <div class="space-y-1">
-                            @foreach($summary['insights'] as $insight)
-                                <p class="text-xs text-slate-300 leading-relaxed flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                                    <span>{{ $insight }}</span>
-                                </p>
-                            @endforeach
+                <div class="flex items-start justify-between gap-3.5">
+                    <div class="flex items-start gap-3.5">
+                        <div class="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 flex-shrink-0 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white tracking-tight mb-1">Financial Insights</h4>
+                            <div class="space-y-1">
+                                @foreach($summary['insights'] as $insight)
+                                    <p class="text-xs text-slate-300 leading-relaxed flex items-center gap-1.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                        <span>{{ $insight }}</span>
+                                    </p>
+                                @endforeach
+                                @foreach($manualInsights as $insight)
+                                    <p class="text-xs text-slate-300 leading-relaxed flex items-center gap-1.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                        <span>{{ $insight->message }}</span>
+                                    </p>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
+                    <a href="{{ route('insights.index') }}" class="flex-shrink-0 text-xs font-semibold text-indigo-300 hover:text-white">Kelola</a>
                 </div>
             </div>
         @endif
